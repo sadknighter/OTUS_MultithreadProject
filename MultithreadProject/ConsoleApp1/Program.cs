@@ -13,10 +13,9 @@ foreach (var attempt in attempts)
     Console.WriteLine($"Attempt with number of ints in array: {attempt}");
     var numOfInts = attempt;
     Random rand = new Random();
-    var numbers = Enumerable.Range(0, 10000)
-                                 .Select(i => new Tuple<int, int>(rand.Next(numOfInts), i))
-                                 .OrderBy(i => i.Item1)
-                                 .Select(i => i.Item2).ToArray();
+    var numbers = Enumerable.Range(0, numOfInts)
+        .Select(i => rand.Next(100))
+        .ToArray();
 
     Stopwatch sw = Stopwatch.StartNew();
     var serialSum = ArrayHelper.SimpleFinderSum(numbers);
