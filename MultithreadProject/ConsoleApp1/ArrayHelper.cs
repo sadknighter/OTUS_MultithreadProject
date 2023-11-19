@@ -1,11 +1,19 @@
-﻿using System.Numerics;
+﻿using System.Collections.Concurrent;
 
 namespace ConsoleApp1
 {
+    public static class Extensions
+    {
+        public static IEnumerable<IEnumerable<T>> Split<T>(this T[] arr, int size)
+        {
+            return arr.Select((s, i) => arr.Skip(i * size).Take(size)).Where(a => a.Any());
+        }
+    }
+
     public static class ArrayHelper
     {
 
-        public static long SimpleFinderSum(int[] digits)
+        public static long SimpleFinderSum(IEnumerable<int> digits)
         {
             var sum = 0;
             foreach (var item in digits)
@@ -16,30 +24,50 @@ namespace ConsoleApp1
             return sum;
         }
 
-        public static long ThreadListFinderSum(int[] digits) 
+        public static long TaskListFinderSum(int[] digits, int parts = 5)
         {
-            int sumPartsCount = 5;
-            var digitsLength = digits.Length;
-            var peacesArrayCount = digitsLength / sumPartsCount;
-            long[] partialSums = new long[sumPartsCount];
+            var tasks = new List<Task>();
+            var sums = new ConcurrentBag<long>();
+            var arrays = digits.Split(parts);
 
-            Parallel.For(0, sumPartsCount, (counter) =>
+            foreach (var array in arrays)
             {
-                int sum = 0;
-                for (int i = counter * peacesArrayCount; i < (counter + 1) * peacesArrayCount; i++)
+                Task task = Task.Run(() =>
                 {
-                    if (i == digitsLength + 1)
-                    {
-                        break;
-                    }
+                    sums.Add(SimpleFinderSum(array));
+                });
 
-                    sum += digits[i];
-                }
+                tasks.Add(task);
+            }
 
-                partialSums[counter] = sum;
-            });
+            Task.WaitAll(tasks.ToArray());
 
-            return partialSums.Sum();
+            long sum = 0;
+
+            foreach (long item in sums)
+            {
+                sum += item;
+            }
+
+            return sum;
+        }
+
+        public static long ParallelForFinderSum(int[] digits, int parts = 5) 
+        {
+            var sums = new ConcurrentBag<long>();
+            var arrays = digits.Split(parts);
+
+
+            Parallel.ForEach(arrays, (arrayPart) => sums.Add(SimpleFinderSum(arrayPart)));
+
+            long sum = 0;
+
+            foreach (long item in sums)
+            {
+                sum += item;
+            }
+
+            return sum;
         }
 
         public static long LinqFinderSum(int[] digits)

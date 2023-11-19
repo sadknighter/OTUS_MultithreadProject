@@ -20,22 +20,29 @@ foreach (var attempt in attempts)
     Stopwatch sw = Stopwatch.StartNew();
     var serialSum = ArrayHelper.SimpleFinderSum(numbers);
     sw.Stop();
-    Console.WriteLine($"Method=SimpleSumFind\tSum: \t{serialSum:n0} \t Time: {sw.ElapsedTicks:n0}\t ticks");
+    Console.WriteLine($"Method=SimpleSumFinder\t\tSum: \t{serialSum:n0} \t Time: {sw.ElapsedTicks:n0}\t ticks");
+
+    int parts = 4;
+    sw = Stopwatch.StartNew();
+    var threadListSum = ArrayHelper.ParallelForFinderSum(numbers, parts);
+    sw.Stop();
+    Console.WriteLine($"Method=ParallelFor({parts} parts)\tSum: \t{threadListSum:n0} \t Time: {sw.ElapsedTicks:n0}\t ticks");
 
     sw = Stopwatch.StartNew();
-    var threadListSum = ArrayHelper.ThreadListFinderSum(numbers);
+    
+    var taskListSum = ArrayHelper.TaskListFinderSum(numbers, parts);
     sw.Stop();
-    Console.WriteLine($"Method=ThreadSumFind\tSum: \t{threadListSum:n0} \t Time: {sw.ElapsedTicks:n0}\t ticks");
+    Console.WriteLine($"Method=TaskListCicle({parts} parts)\tSum: \t{taskListSum:n0} \t Time: {sw.ElapsedTicks:n0}\t ticks");
 
     sw = Stopwatch.StartNew();
     var linqSum = ArrayHelper.LinqFinderSum(numbers);
     sw.Stop();
-    Console.WriteLine($"Method=LinqSumFind\tSum: \t{threadListSum:n0} \t Time: {sw.ElapsedTicks:n0}\t ticks");
+    Console.WriteLine($"Method=LinqSumFind\t\tSum: \t{threadListSum:n0} \t Time: {sw.ElapsedTicks:n0}\t ticks");
 
     sw = Stopwatch.StartNew();
     var parallelLinqSum = ArrayHelper.ParallelLinqFinderSum(numbers);
     sw.Stop();
-    Console.WriteLine($"Method=ParallelLinq\tSum: \t{threadListSum:n0} \t Time: {sw.ElapsedTicks:n0}\t ticks");
+    Console.WriteLine($"Method=ParallelLinq\t\tSum: \t{threadListSum:n0} \t Time: {sw.ElapsedTicks:n0}\t ticks");
 
     Console.WriteLine("End of Attempt");
     Console.WriteLine("");
